@@ -17,4 +17,4 @@ notify - the number of days before a certificate expiration to start warning (de
 
 ## Important
 
-/k8s/kubeconfig isn't provided or references in the Dockerfile, you'll need to do that part yourself!
+/k8s/kubeconfig isn't provided or references in the Dockerfile. Apply that in a different container and make this the base it.

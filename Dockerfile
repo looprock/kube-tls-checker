@@ -1,13 +1,11 @@
-FROM docker.ojointernal.com/images/kubectl:latest
+FROM alpine:latest
 MAINTAINER Doug Land <dland@ojolabs.com>
-
-# change 7
 
 copy requirements.txt /tmp/
 
 RUN \
   apk update \
-  && apk add python3 py-pip build-base python3-dev openssl-dev \
+  && apk add python3 py-pip build-base python3-dev openssl-dev ca-certificates bash py-requests \
   && pip3 install -r /tmp/requirements.txt \
   && apk del build-base \
   && rm -rf /var/cache/apk/*
