@@ -14,3 +14,7 @@ kubeconfig - kubernetes configuration file (default: /k8s/kubeconfig)
 context - the context to read endpoints from (default: None)
 
 notify - the number of days before a certificate expiration to start warning (default: 30)
+
+## Important
+
+/k8s/kubeconfig isn't provided or references in the Dockerfile, you'll need to do that part yourself!
