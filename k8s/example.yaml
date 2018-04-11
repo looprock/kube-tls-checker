@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: operations
+  selfLink: /api/v1/namespaces/operations
+spec:
+  finalizers:
+  - kubernetes
+status:
+  phase: Active
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: ssl-checker
+  name: ssl-checker
+  namespace: operations
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: ssl-checker
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 50%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ssl-checker
+      name: ssl-checker
+    spec:
+      containers:
+      - env:
+        - name: context
+          value: production
+        image: your/ssl-checker:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          successThreshold: 1
+          tcpSocket:
+            port: 18080
+          timeoutSeconds: 10
+        readinessProbe:
+          failureThreshold: 3
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          tcpSocket:
+            port: 18080
+          timeoutSeconds: 10
+        name: prometheus
+        ports:
+        - containerPort: 18080
+          protocol: TCP
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ssl-checker
+  namespace: operations
+  labels:
+    app: ssl-checker
+spec:
+  selector:
+    app: ssl-checker
+  ports:
+  - name: prometheus
+    port: 18080
+    protocol: TCP
+    targetPort: 18080
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ssl-checker
+  namespace: monitoring
+  labels:
+    team: operations
+    k8s-app: ssl-checker
+spec:
+  selector:
+    matchLabels:
+      app: ssl-checker
+  endpoints:
+  - port: prometheus
+  namespaceSelector:
+    matchNames:
+    - operations

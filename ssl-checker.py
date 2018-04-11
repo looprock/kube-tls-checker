@@ -96,10 +96,9 @@ def main():
     str = ''
     hosts = getsites()
     for h in hosts.keys():
-        mname = "%s_expiration" % (h.replace('.', '_'))
-        str += "# HELP %s tls error / certificate expires in %d days.\n" % (mname, notify)
-        str += "# TYPE %s count\n" % (mname)
-        str += "%s %s\n" % (mname, hosts[h])
+        str += "# HELP site tls error / certificate expires in %d days.\n" % (notify)
+        str += "# TYPE ssl_checker_expiration count\n"
+        str += "ssl_checker_expiration{site=\"%s\"} %s\n" % (h, hosts[h])
     return str
 
 @app.get('/')
