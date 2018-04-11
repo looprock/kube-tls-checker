@@ -17,4 +17,7 @@ notify - the number of days before a certificate expiration to start warning (de
 
 ## Important
 
-/k8s/kubeconfig isn't provided or references in the Dockerfile. Apply that in a different container and make this the base it.
+/k8s/kubeconfig isn't provided or references in the Dockerfile. Apply that in a different container and make this the base for it with the command: 
+
+```CMD /usr/bin/python3 /usr/local/bin/ssl-checker.py
+```
